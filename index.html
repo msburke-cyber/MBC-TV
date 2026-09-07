@@ -229,6 +229,26 @@ tbody tr.is-moorabbin td{
 }
 </style>
 
+
+<style id="ipad-landscape-optimisation">
+html,body{overflow:hidden!important;height:100vh!important}
+header{padding-top:1vh!important;padding-bottom:.6vh!important}
+.consolidated-results,#consolidatedResults,.results-page{height:100vh!important;overflow:hidden!important}
+.consolidated-results .results-grid,#consolidatedResults .results-grid{gap:.8vh!important}
+.consolidated-results .result-card,#consolidatedResults .result-card{margin-bottom:.7vh!important}
+.consolidated-results .result-card-header,#consolidatedResults .result-card-header{min-height:3.2vh!important;padding:.3vh .8vw!important}
+.consolidated-results .result-row,#consolidatedResults .result-row{min-height:3.55vh!important;padding:0 .7vw!important}
+table{width:100%!important}
+th,td{padding-top:.35vh!important;padding-bottom:.35vh!important}
+.midweek-page .mid-grid,.midweek-ladders .mid-grid,#midweekLadders .mid-grid{gap:.9vw!important}
+.midweek-page .mid-row,.midweek-ladders .mid-row,#midweekLadders .mid-row{min-height:4.55vh!important;font-size:1.8vh!important}
+.midweek-page .mid-head,.midweek-ladders .mid-head,#midweekLadders .mid-head{font-size:1.55vh!important;height:3.5vh!important}
+.midweek-page .mid-title,.midweek-ladders .mid-title,#midweekLadders .mid-title{font-size:2.25vh!important;height:5vh!important}
+.midweek-page .mid-row span,.midweek-ladders .mid-row span,#midweekLadders .mid-row span{min-width:0!important}
+.ladder-page,.saturday-ladder,#l0,#l1,#l2,#l3,#l4{overflow:hidden!important}
+.ladder-page table th,.ladder-page table td,.saturday-ladder table th,.saturday-ladder table td{padding:.4vh .45vw!important}
+@media (orientation:landscape){.page,.screen,.content,main{max-height:100vh!important;overflow:hidden!important}}
+</style>
 </head>
 <body>
 <div id="app">
@@ -605,6 +625,14 @@ buildScreens();
 loadAll();
 setInterval(loadAll,15000);
 setInterval(()=>{if(running)next()},15000);
+</script>
+
+<script id="ipad-viewport-safeguard">
+(function(){
+ function fit(){document.documentElement.style.height=innerHeight+"px";document.body.style.height=innerHeight+"px";document.body.style.overflow="hidden";}
+ addEventListener("resize",fit); addEventListener("orientationchange",function(){setTimeout(fit,250)});
+ addEventListener("DOMContentLoaded",fit);
+})();
 </script>
 </body>
 </html>
