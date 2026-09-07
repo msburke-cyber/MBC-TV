@@ -169,19 +169,64 @@ tbody tr.is-moorabbin td{
 
 
 <style id="midweek-ladders-style">
-.midweek-screen-wrap{background:rgba(255,255,255,.98);border-radius:16px;padding:14px 18px;box-sizing:border-box}
-.midweek-screen-wrap .mw-title{color:#0057B8;font-weight:900;font-size:clamp(34px,3.1vw,50px);text-align:center;margin:0 0 12px}
-.midweek-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.midweek-card{background:#fff;border:2px solid #0057B8;border-radius:10px;overflow:hidden}
-.midweek-card h3{margin:0;padding:8px;background:#0057B8;color:#fff;text-align:center;font-size:clamp(22px,2vw,32px)}
-.midweek-card .mw-meta{text-align:center;color:#36536f;font-size:clamp(13px,1vw,18px);font-weight:700;padding:5px}
-.midweek-card table{width:100%;border-collapse:collapse;font-size:clamp(14px,1.16vw,21px)}
-.midweek-card th{background:#eaf3ff;color:#0057B8;padding:5px}
-.midweek-card td{padding:5px 6px;border-top:1px solid #dbe3ec;text-align:center}
+.midweek-screen-wrap{background:rgba(255,255,255,.98);border-radius:12px;padding:8px 10px;box-sizing:border-box}
+.midweek-screen-wrap .mw-title{color:#0057B8;font-weight:900;font-size:clamp(28px,2.6vw,42px);text-align:center;line-height:1;margin:0 0 7px}
+.midweek-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.midweek-card{background:#fff;border:2px solid #0057B8;border-radius:8px;overflow:hidden}
+.midweek-card h3{margin:0;padding:5px;background:#0057B8;color:#fff;text-align:center;font-size:clamp(19px,1.65vw,27px);line-height:1.05}
+.midweek-card .mw-meta{text-align:center;color:#36536f;font-size:clamp(11px,.85vw,15px);font-weight:700;padding:2px}
+.midweek-card table{width:100%;border-collapse:collapse;font-size:clamp(12px,1vw,17px);line-height:1.05}
+.midweek-card th{background:#eaf3ff;color:#0057B8;padding:3px 4px}
+.midweek-card td{padding:3px 4px;border-top:1px solid #dbe3ec;text-align:center}
 .midweek-card td:nth-child(2){text-align:left;font-weight:700}
 .midweek-card tr.highlight{background:#eaf3ff;font-weight:900}
-.midweek-card tbody tr:nth-child(4){border-bottom:5px solid #0057B8}
-.midweek-card tbody tr:nth-child(5) td{border-top:5px solid #0057B8}
+.midweek-card tbody tr:nth-child(4){border-bottom:4px solid #0057B8}
+.midweek-card tbody tr:nth-child(5) td{border-top:4px solid #0057B8}
+</style>
+
+
+<style id="ipad-landscape-fit">
+/* iPad landscape: the iPad is the master display, so every screen must fit without scrolling. */
+@media (max-width:1100px) and (orientation:landscape){
+  #app{padding:10px 20px;min-height:100vh;overflow:hidden}
+  header{margin-bottom:10px;gap:10px}
+  h1{font-size:clamp(30px,4.2vw,48px)}
+  .sub{font-size:clamp(16px,1.8vw,22px);margin-top:2px}
+  #updated{font-size:12px}
+  .title{font-size:clamp(24px,3vw,34px);margin:2px 0 8px}
+  .meta{font-size:14px;margin-bottom:7px}
+
+  /* Keep all five Saturday sections visible on one results screen. */
+  .cr-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 8px}
+  .consolidated-results-screen{padding:8px 10px;border-radius:12px}
+  .consolidated-results-screen .cr-title{font-size:clamp(25px,3vw,36px);margin-bottom:3px}
+  .consolidated-results-screen .cr-round{font-size:15px;margin-bottom:5px}
+  .cr-card{border-width:1px;border-radius:7px}
+  .cr-card .cr-head{padding:3px 6px;font-size:15px}
+  .cr-card .cr-head small{font-size:10px}
+  .cr-table{font-size:13px}
+  .cr-table th{padding:2px 4px}
+  .cr-table td{padding:2px 4px}
+  .cr-table .score{width:82px}
+  .cr-table .status{width:45px}
+
+  /* Compact individual ladders. */
+  table{font-size:clamp(16px,1.8vw,21px)}
+  th,td{padding:5px 7px}
+
+  /* Three Midweek ladders must fit completely on the iPad. */
+  .midweek-screen-wrap{padding:5px 6px;border-radius:10px}
+  .midweek-screen-wrap .mw-title{font-size:clamp(23px,2.6vw,30px);margin-bottom:4px}
+  .midweek-grid{gap:5px}
+  .midweek-card{border-width:1px;border-radius:6px}
+  .midweek-card h3{padding:4px;font-size:clamp(18px,2vw,23px)}
+  .midweek-card .mw-meta{font-size:11px;padding:1px}
+  .midweek-card table{font-size:clamp(15px,1.55vw,19px);line-height:1.02}
+  .midweek-card th{padding:3px 3px}
+  .midweek-card td{padding:3px 3px}
+  .midweek-card tbody tr:nth-child(4){border-bottom-width:3px}
+  .midweek-card tbody tr:nth-child(5) td{border-top-width:3px}
+}
 </style>
 
 </head>
