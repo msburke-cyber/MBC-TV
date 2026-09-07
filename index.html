@@ -187,7 +187,7 @@ tbody tr.is-moorabbin td{
 
 <style id="ipad-landscape-fit">
 /* iPad landscape: the iPad is the master display, so every screen must fit without scrolling. */
-@media (max-width:1400px) and (orientation:landscape){
+@media (max-width:1100px) and (orientation:landscape){
   #app{padding:10px 20px;min-height:100vh;overflow:hidden}
   header{margin-bottom:10px;gap:10px}
   h1{font-size:clamp(30px,4.2vw,48px)}
@@ -197,16 +197,16 @@ tbody tr.is-moorabbin td{
   .meta{font-size:14px;margin-bottom:7px}
 
   /* Keep all five Saturday sections visible on one results screen. */
-  .cr-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 8px}
+  .cr-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 8px}
   .consolidated-results-screen{padding:8px 10px;border-radius:12px}
   .consolidated-results-screen .cr-title{font-size:clamp(25px,3vw,36px);margin-bottom:3px}
   .consolidated-results-screen .cr-round{font-size:15px;margin-bottom:5px}
   .cr-card{border-width:1px;border-radius:7px}
   .cr-card .cr-head{padding:3px 6px;font-size:15px}
   .cr-card .cr-head small{font-size:10px}
-  .cr-table{font-size:clamp(12px,1.25vw,16px)}
+  .cr-table{font-size:13px}
   .cr-table th{padding:2px 4px}
-  .cr-table td{padding:2px 3px}
+  .cr-table td{padding:2px 4px}
   .cr-table .score{width:82px}
   .cr-table .status{width:45px}
 
@@ -226,52 +226,6 @@ tbody tr.is-moorabbin td{
   .midweek-card td{padding:3px 3px}
   .midweek-card tbody tr:nth-child(4){border-bottom-width:3px}
   .midweek-card tbody tr:nth-child(5) td{border-top-width:3px}
-}
-</style>
-
-
-<style id="tuesday-night-style">
-.tuesday-screen-wrap,.tuesday-results-wrap{
-  background:rgba(255,255,255,.98);border-radius:12px;padding:8px 10px;box-sizing:border-box
-}
-.tuesday-screen-wrap .tn-title,.tuesday-results-wrap .tn-title{
-  color:#0057B8;font-weight:900;font-size:clamp(28px,2.6vw,42px);text-align:center;line-height:1;margin:0 0 7px
-}
-.tuesday-grid{
-  display:grid;grid-template-columns:repeat(2,1fr);gap:10px
-}
-.tuesday-card{
-  background:#fff;border:2px solid #0057B8;border-radius:8px;overflow:hidden
-}
-.tuesday-card h3{
-  margin:0;padding:6px;background:#0057B8;color:#fff;text-align:center;
-  font-size:clamp(20px,1.8vw,28px);line-height:1.05
-}
-.tuesday-card table{
-  width:100%;border-collapse:collapse;font-size:clamp(15px,1.55vw,20px);line-height:1.03
-}
-.tuesday-card th{background:#eaf3ff;color:#0057B8;padding:4px}
-.tuesday-card td{padding:4px;border-top:1px solid #dbe3ec;text-align:center}
-.tuesday-card td:nth-child(2){text-align:left;font-weight:700}
-.tuesday-card tr.highlight{background:#eaf3ff;font-weight:900}
-.tuesday-card tbody tr:nth-child(4){border-bottom:4px solid #0057B8}
-.tuesday-card tbody tr:nth-child(5) td{border-top:4px solid #0057B8}
-.tuesday-results-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.tuesday-result-card{background:#fff;border:2px solid #0057B8;border-radius:8px;overflow:hidden}
-.tuesday-result-card h3{margin:0;padding:7px;background:#0057B8;color:#fff;text-align:center;font-size:clamp(20px,1.8vw,28px)}
-.tuesday-result-card .tr-meta{text-align:center;color:#36536f;font-size:clamp(12px,1vw,16px);padding:3px;font-weight:700}
-.tuesday-result-card .tr-match{display:grid;grid-template-columns:minmax(0,1fr) 110px minmax(0,1fr);gap:7px;align-items:center;padding:10px 12px;font-size:clamp(18px,1.7vw,26px)}
-.tuesday-result-card .tr-right{text-align:right}
-.tuesday-result-card .tr-score{text-align:center;font-weight:900;white-space:nowrap}
-.tuesday-result-card .tr-status{text-align:center;font-size:.72em;font-weight:900;margin-top:2px}
-@media(max-width:1400px) and (orientation:landscape){
-  .tuesday-screen-wrap,.tuesday-results-wrap{padding:5px 6px}
-  .tuesday-screen-wrap .tn-title,.tuesday-results-wrap .tn-title{font-size:clamp(23px,2.6vw,30px);margin-bottom:4px}
-  .tuesday-grid,.tuesday-results-grid{gap:6px}
-  .tuesday-card h3,.tuesday-result-card h3{padding:4px;font-size:clamp(18px,2vw,23px)}
-  .tuesday-card table{font-size:clamp(15px,1.55vw,19px)}
-  .tuesday-card th,.tuesday-card td{padding:3px}
-  .tuesday-result-card .tr-match{padding:7px 9px;font-size:clamp(16px,1.55vw,22px)}
 }
 </style>
 
@@ -314,14 +268,6 @@ const MIDWEEK=[
  {side:'Moorabbin 1',id:'ad7cbf21-c0a3-44a2-8c28-ce79df287533'},
  {side:'Moorabbin 2',id:'1eb60506-920d-49d3-bebb-6267e2440bff'},
  {side:'Moorabbin 3',id:'fbfe145f-d10d-4a14-9004-5e6dabbb4464'}
-];
-
-
-const TUESDAY=[
- {side:'Moorabbin Tuesday 1',id:'49ee7645-63ff-4feb-b7a8-769f187a1e84'},
- {side:'Moorabbin Tuesday 2',id:'3f0b0ab2-3557-429c-8428-f43225bea889'},
- {side:'Moorabbin Tuesday 3',id:'24f34f6d-4a16-464e-abc2-00220deed3ba'},
- {side:'Moorabbin Tuesday 4',id:'7590d80f-b7ca-4cb6-bcc0-1ce328469ee7'}
 ];
 
 let screenIndex=0, running=true, screens=[];
@@ -623,117 +569,6 @@ async function loadMidweekLadders(){
  host.innerHTML=`<div class="midweek-screen-wrap"><div class="mw-title">MIDWEEK LADDERS</div><div class="midweek-grid">${cards.join('')}</div></div>`;
 }
 
-
-async function computeTuesdayLadder(parsed){
- const stats={};
- const ensure=id=>stats[id]??={played:0,wins:0,losses:0,draws:0,score:0,against:0,points:0};
-
- for(const m of (parsed.allMatches||[])){
-   if(!m.completed || String(m.state).toUpperCase()!=='PLAYED') continue;
-   const a=ensure(m.c1),b=ensure(m.c2);
-   a.played++; b.played++;
-   a.score+=Number(m.s1||0); a.against+=Number(m.s2||0);
-   b.score+=Number(m.s2||0); b.against+=Number(m.s1||0);
-
-   const detail=await getMatchDetail(m.id);
-   const rinks=rinkResultsFromDetail(detail,m.c1,m.c2);
-   const status=String(m.resultStatus||'').toLowerCase();
-   const isForfeit=/forfeit|walkover/.test(status);
-   const winner=m.winner||m.apiWinner||null;
-
-   let matchPts1=Number(m.p1||0), matchPts2=Number(m.p2||0);
-   if(!isForfeit && rinks.length){
-     // Tuesday overall scoring: 6 for a win, 3 for a draw.
-     const base1=m.s1>m.s2?6:(m.s1===m.s2?3:0);
-     const base2=m.s2>m.s1?6:(m.s1===m.s2?3:0);
-     let rink1=0,rink2=0;
-     for(const r of rinks){
-       if(r.s1>r.s2) rink1+=2;
-       else if(r.s2>r.s1) rink2+=2;
-       else {rink1++;rink2++;}
-     }
-     matchPts1=base1+rink1;
-     matchPts2=base2+rink2;
-   } else if(isForfeit){
-     // Preserve BowlsLink's recorded forfeit points rather than inventing them.
-     matchPts1=Number(m.p1||0); matchPts2=Number(m.p2||0);
-   }
-
-   a.points+=matchPts1; b.points+=matchPts2;
-   if(winner===m.c1){a.wins++;b.losses++}
-   else if(winner===m.c2){b.wins++;a.losses++}
-   else {a.draws++;b.draws++}
- }
- return Object.entries(stats)
-   .map(([id,s])=>({id,name:parsed.competitors[id]?.name||'Unknown',...s,diff:s.score-s.against}))
-   .sort((a,b)=>b.points-a.points||b.diff-a.diff||b.score-a.score)
-   .map((x,i)=>({...x,pos:i+1}));
-}
-
-async function loadTuesdayLadders(){
- const host=document.getElementById('tuesdayLadders');
- if(!host)return;
- const cards=[];
- for(const cfg of TUESDAY){
-  try{
-   const p=await get('/competition/'+cfg.id+'/matches');
-   const parsed=parseCompetition(p);
-   const ladder=await computeTuesdayLadder(parsed);
-   const rows=ladder.map(x=>`<tr class="${/moorabbin/i.test(x.name)?'highlight':''}">
-     <td>${x.pos}</td><td>${esc(x.name)}</td><td>${x.played}</td><td>${x.wins}</td><td>${x.losses}</td><td>${x.draws}</td><td>${x.points}</td>
-   </tr>`).join('');
-   cards.push(`<section class="tuesday-card">
-     <h3>${esc(cfg.side)}</h3>
-     <table><thead><tr><th>Pos</th><th>Club</th><th>P</th><th>W</th><th>L</th><th>D</th><th>Pts</th></tr></thead>
-     <tbody>${rows||'<tr><td colspan="7">No ladder data</td></tr>'}</tbody></table>
-   </section>`);
-  }catch(e){
-   console.error('Tuesday ladder:',cfg.side,e);
-   cards.push(`<section class="tuesday-card"><h3>${esc(cfg.side)}</h3><div class="notice error">Unable to read BowlsLink — retrying…</div></section>`);
-  }
- }
- host.innerHTML=`<div class="tuesday-screen-wrap"><div class="tn-title">TUESDAY NIGHT LADDERS</div><div class="tuesday-grid">${cards.join('')}</div></div>`;
-}
-
-async function loadTuesdayResults(){
- const host=document.getElementById('tuesdayResults');
- if(!host)return;
- const cards=[];
- for(const cfg of TUESDAY){
-  try{
-   const p=await get('/competition/'+cfg.id+'/matches');
-   const parsed=parseCompetition(p);
-   const played=(parsed.allMatches||[]).filter(m=>m.completed && (/moorabbin/i.test(m.n1)||/moorabbin/i.test(m.n2)));
-   played.sort((a,b)=>{
-     const da=Date.parse(a.dateUtc||'')||0, db=Date.parse(b.dateUtc||'')||0;
-     return db-da || Number(b.round)-Number(a.round);
-   });
-   const m=played[0];
-   if(!m){
-     cards.push(`<section class="tuesday-result-card"><h3>${esc(cfg.side)}</h3><div class="tr-meta">No completed Moorabbin game found</div></section>`);
-     continue;
-   }
-   const mo1=/moorabbin/i.test(m.n1), mo2=/moorabbin/i.test(m.n2);
-   const moId=mo1?m.c1:m.c2;
-   const status=m.winner===moId?'WIN':(m.winner?'LOSS':'DRAW');
-   const date=m.dateUtc?new Date(m.dateUtc).toLocaleDateString(undefined,{day:'numeric',month:'short'}):`Round ${m.round}`;
-   cards.push(`<section class="tuesday-result-card">
-     <h3>${esc(cfg.side)}</h3>
-     <div class="tr-meta">${esc(date)} • Round ${esc(m.round)}</div>
-     <div class="tr-match">
-       <div class="${mo1?'moor':''}">${esc(m.n1)}</div>
-       <div class="tr-score">${m.s1} — ${m.s2}<div class="tr-status ${status==='WIN'?'win':status==='LOSS'?'loss':''}">${status}</div></div>
-       <div class="tr-right ${mo2?'moor':''}">${esc(m.n2)}</div>
-     </div>
-   </section>`);
-  }catch(e){
-   console.error('Tuesday results:',cfg.side,e);
-   cards.push(`<section class="tuesday-result-card"><h3>${esc(cfg.side)}</h3><div class="notice error">Unable to read BowlsLink — retrying…</div></section>`);
-  }
- }
- host.innerHTML=`<div class="tuesday-results-wrap"><div class="tn-title">TUESDAY NIGHT — MOORABBIN RESULTS</div><div class="tuesday-results-grid">${cards.join('')}</div></div>`;
-}
-
 async function loadSide(side,ri){
  const p=await get('/competition/'+side.id+'/matches');
  const parsed=parseCompetition(p);
@@ -746,8 +581,6 @@ async function loadAll(){
   await loadConsolidatedResults();
   await Promise.all(SIDES.map((x,i)=>loadSide(x,i)));
   await loadMidweekLadders();
-  await loadTuesdayLadders();
-  await loadTuesdayResults();
   document.getElementById('updated').textContent='BowlsLink updated '+new Date().toLocaleTimeString();
  }catch(e){
   document.getElementById('updated').textContent='Could not update BowlsLink';
@@ -762,8 +595,6 @@ function buildScreens(){
   root.insertAdjacentHTML('beforeend',`<section id="l${i}" class="screen"></section>`);
  });
  root.insertAdjacentHTML('beforeend',`<section id="midweekLadders" class="screen"></section>`);
- root.insertAdjacentHTML('beforeend',`<section id="tuesdayLadders" class="screen"></section>`);
- root.insertAdjacentHTML('beforeend',`<section id="tuesdayResults" class="screen"></section>`);
  screens=[...document.querySelectorAll('.screen')];show();
 }
 function show(){screens.forEach((s,i)=>s.classList.toggle('active',i===screenIndex))}
