@@ -419,6 +419,26 @@ tbody tr.is-moorabbin td{
   .midweek-result-card h3{padding:4px;font-size:21px}
   .midweek-result-card .mw-match{padding:7px;font-size:clamp(18px,1.8vw,25px)}
 }
+
+<style id="all-results-table-style">
+.mw-round,.tn-round{text-align:center;color:#36536f;font-size:clamp(11px,.85vw,15px);font-weight:700;padding:2px 0 3px}
+.mw-results-table,.tn-results-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:clamp(12px,1vw,17px);line-height:1.05}
+.mw-results-table th,.tn-results-table th{background:#eaf3ff;color:#0057B8;padding:3px 4px}
+.mw-results-table td,.tn-results-table td{padding:4px 4px;border-top:1px solid #dbe3ec;text-align:center}
+.mw-results-table td.team,.tn-results-table td.team{text-align:left;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mw-results-table td.score,.tn-results-table td.score{font-weight:900;white-space:nowrap}
+.mw-results-table td.status,.tn-results-table td.status{font-weight:900}
+.mw-results-table tr.moor,.tn-results-table tr.moor{background:#eaf3ff}
+.mw-results-table tr.pending,.tn-results-table tr.pending{color:#657384}
+.mw-results-table .status.win,.tn-results-table .status.win{color:#087a42}
+.mw-results-table .status.loss,.tn-results-table .status.loss{color:#b42318}
+.mw-results-table .status.draw,.tn-results-table .status.draw{color:#36536f}
+@media (max-width:1400px) and (orientation:landscape){
+ .mw-results-table,.tn-results-table{font-size:clamp(13px,1.35vw,19px)}
+ .mw-results-table td,.tn-results-table td{padding:3px 4px}
+ .mw-round,.tn-round{font-size:12px;padding:1px 0 2px}
+}
+</style>
 </style>
 
 </head>
@@ -834,32 +854,59 @@ async function loadMidweekResults(){
  for(const cfg of MIDWEEK){
   try{
    const parsed=parseCompetition(await get('/competition/'+cfg.id+'/matches'));
-   const played=(parsed.allMatches||[]).filter(m=>m.completed&&(/moorabbin/i.test(m.n1)||/moorabbin/i.test(m.n2)));
-   played.sort((a,b)=>(Number(b.round)||0)-(Number(a.round)||0)||(Date.parse(b.dateUtc||'')||0)-(Date.parse(a.dateUtc||'')||0));
-   const m=played[0];
-   let body='<div class="notice">No completed Moorabbin result yet.</div>';
-   if(m){
-    const mo1=/moorabbin/i.test(m.n1);
-    const status=m.winner===null?'draw':(m.winner===(mo1?m.c1:m.c2)?'win':'loss');
-    body=`<div class="mw-match"><div>${esc(m.n1)}</div><div class="mw-score">${m.s1} — ${m.s2}</div><div>${esc(m.n2)}</div><div class="mw-status ${status}">${status.toUpperCase()}</div></div>`;
+   const matches=(parsed.matches||[]).slice().sort((a,b)=>Number(a.round)-Number(b.round));
+   let body='';
+   if(!matches.length){
+    body='<div class="notice">No matches found for the current round.</div>';
+   }else{
+    body=`<table class="mw-results-table"><thead><tr><th>Home</th><th>Score</th><th>Away</th><th></th></tr></thead><tbody>${matches.map(m=>{
+      const mo1=/moorabbin/i.test(m.n1),mo2=/moorabbin/i.test(m.n2);
+      const played=m.completed;
+      let status='';
+      if(played && (mo1||mo2)){
+       const mo=mo1?m.c1:m.c2;
+       status=m.winner===mo?'WIN':(m.winner?'LOSS':'DRAW');
+      }
+      return `<tr class="${mo1||mo2?'moor':''} ${played?'':'pending'}"><td class="team">${esc(m.n1)}</td><td class="score">${played?`${m.s1} — ${m.s2}`:'—'}</td><td class="team">${esc(m.n2)}</td><td class="status ${status.toLowerCase()}">${status}</td></tr>`;
+    }).join('')}</tbody></table>`;
    }
-   cards.push(`<section class="midweek-result-card"><h3>${esc(cfg.side)}</h3>${body}</section>`);
+   cards.push(`<section class="midweek-result-card"><h3>${esc(cfg.side)}</h3><div class="mw-round">${parsed.currentRound===null?'Current round':`Round ${parsed.currentRound}`}</div>${body}</section>`);
   }catch(e){
-   console.error('Midweek result:',cfg.side,e);
+   console.error('Midweek results:',cfg.side,e);
    cards.push(`<section class="midweek-result-card"><h3>${esc(cfg.side)}</h3><div class="notice error">Unable to read BowlsLink — retrying…</div></section>`);
   }
  }
- host.innerHTML=`<div class="midweek-results-wrap"><div class="mw-result-title">MIDWEEK — MOORABBIN RESULTS</div><div class="midweek-results-grid">${cards.join('')}</div></div>`;
+ host.innerHTML=`<div class="midweek-results-wrap"><div class="mw-result-title">MIDWEEK RESULTS</div><div class="midweek-results-grid">${cards.join('')}</div></div>`;
 }
 
 async function loadTuesdayResults(){
  const host=document.getElementById('tuesdayResults');if(!host)return;const cards=[];
- for(const cfg of TUESDAY){try{const parsed=parseCompetition(await get('/competition/'+cfg.id+'/matches'));const played=(parsed.allMatches||[]).filter(m=>m.completed&&(/moorabbin/i.test(m.n1)||/moorabbin/i.test(m.n2)));
-  played.sort((a,b)=>(Number(b.round)||0)-(Number(a.round)||0)||(Date.parse(b.dateUtc||'')||0)-(Date.parse(a.dateUtc||'')||0));const m=played[0];let body='<div class="notice">No completed Moorabbin result yet.</div>';
-  if(m){const mo1=/moorabbin/i.test(m.n1),status=m.winner===null?'draw':(m.winner===(mo1?m.c1:m.c2)?'win':'loss');body=`<div class="tn-match"><div>${esc(m.n1)}</div><div class="tn-score">${m.s1} — ${m.s2}</div><div>${esc(m.n2)}</div><div class="tn-status ${status}">${status.toUpperCase()}</div></div>`;}
-  cards.push(`<section class="tuesday-result-card"><h3>${esc(cfg.side)}</h3>${body}</section>`);
- }catch(e){console.error('Tuesday result:',cfg.side,e);cards.push(`<section class="tuesday-result-card"><h3>${esc(cfg.side)}</h3><div class="notice error">Unable to read BowlsLink — retrying…</div></section>`);}}
- host.innerHTML=`<div class="tuesday-results-wrap"><div class="tn-title">TUESDAY NIGHT — MOORABBIN RESULTS</div><div class="tuesday-results-grid">${cards.join('')}</div></div>`;
+ for(const cfg of TUESDAY){
+  try{
+   const parsed=parseCompetition(await get('/competition/'+cfg.id+'/matches'));
+   const matches=(parsed.matches||[]).slice().sort((a,b)=>Number(a.round)-Number(b.round));
+   let body='';
+   if(!matches.length){
+    body='<div class="notice">No matches found for the current round.</div>';
+   }else{
+    body=`<table class="tn-results-table"><thead><tr><th>Home</th><th>Score</th><th>Away</th><th></th></tr></thead><tbody>${matches.map(m=>{
+      const mo1=/moorabbin/i.test(m.n1),mo2=/moorabbin/i.test(m.n2);
+      const played=m.completed;
+      let status='';
+      if(played && (mo1||mo2)){
+       const mo=mo1?m.c1:m.c2;
+       status=m.winner===mo?'WIN':(m.winner?'LOSS':'DRAW');
+      }
+      return `<tr class="${mo1||mo2?'moor':''} ${played?'':'pending'}"><td class="team">${esc(m.n1)}</td><td class="score">${played?`${m.s1} — ${m.s2}`:'—'}</td><td class="team">${esc(m.n2)}</td><td class="status ${status.toLowerCase()}">${status}</td></tr>`;
+    }).join('')}</tbody></table>`;
+   }
+   cards.push(`<section class="tuesday-result-card"><h3>${esc(cfg.side)}</h3><div class="tn-round">${parsed.currentRound===null?'Current round':`Round ${parsed.currentRound}`}</div>${body}</section>`);
+  }catch(e){
+   console.error('Tuesday results:',cfg.side,e);
+   cards.push(`<section class="tuesday-result-card"><h3>${esc(cfg.side)}</h3><div class="notice error">Unable to read BowlsLink — retrying…</div></section>`);
+  }
+ }
+ host.innerHTML=`<div class="tuesday-results-wrap"><div class="tn-title">TUESDAY NIGHT RESULTS</div><div class="tuesday-results-grid">${cards.join('')}</div></div>`;
 }
 
 async function loadAll(){
