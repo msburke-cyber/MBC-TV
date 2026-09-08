@@ -241,6 +241,32 @@ tbody tr.is-moorabbin td{
 .tuesday-result-card .tn-match{padding:10px 12px;text-align:center;font-size:clamp(20px,2vw,30px);font-weight:800}.tuesday-result-card .tn-score{font-size:1.25em;font-weight:900;margin:5px 0}.tuesday-result-card .tn-status{font-size:.85em;font-weight:900}.tuesday-result-card .tn-status.win{color:#087a42}.tuesday-result-card .tn-status.loss{color:#b42318}.tuesday-result-card .tn-status.draw{color:#36536f}
 @media (max-width:1400px) and (orientation:landscape){.tuesday-screen-wrap,.tuesday-results-wrap{padding:5px 6px}.tuesday-screen-wrap .tn-title,.tuesday-results-wrap .tn-title{font-size:clamp(23px,2.6vw,30px);margin-bottom:4px}.tuesday-grid,.tuesday-results-grid{gap:5px}.tuesday-card,.tuesday-result-card{border-width:1px}.tuesday-card h3,.tuesday-result-card h3{padding:4px;font-size:clamp(18px,2vw,23px)}.tuesday-card table{font-size:clamp(15px,1.55vw,19px)}.tuesday-result-card .tn-match{padding:7px;font-size:clamp(18px,1.8vw,25px)}}
 </style>
+
+<style id="tuesday-ipad-fit">
+.tuesday-screen-wrap{background:rgba(255,255,255,.98);border-radius:12px;padding:8px 10px;box-sizing:border-box}
+.tuesday-screen-wrap .tn-title{color:#0057B8;font-weight:900;font-size:clamp(28px,2.6vw,42px);text-align:center;line-height:1;margin:0 0 7px}
+.tuesday-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tuesday-card{background:#fff;border:2px solid #0057B8;border-radius:8px;overflow:hidden}
+.tuesday-card h3{margin:0;padding:5px;background:#0057B8;color:#fff;text-align:center;font-size:clamp(18px,1.55vw,25px);line-height:1.05}
+.tuesday-card table{width:100%;border-collapse:collapse;font-size:clamp(12px,1vw,17px);line-height:1.02}
+.tuesday-card th{background:#eaf3ff;color:#0057B8;padding:3px 4px}
+.tuesday-card td{padding:3px 4px;border-top:1px solid #dbe3ec;text-align:center}
+.tuesday-card td:nth-child(2){text-align:left;font-weight:700}
+.tuesday-card tr.highlight{background:#eaf3ff;font-weight:900}
+@media (max-width:1400px) and (orientation:landscape){
+  #app{padding:7px 14px;min-height:100vh;overflow:hidden}
+  .tuesday-screen-wrap{padding:3px 4px;border-radius:7px}
+  .tuesday-screen-wrap .tn-title{font-size:24px;margin-bottom:3px}
+  .tuesday-grid{gap:3px 5px}
+  .tuesday-card{border-width:1px;border-radius:4px}
+  .tuesday-card h3{padding:2px;font-size:17px}
+  .tuesday-card table{font-size:13px;line-height:1}
+  .tuesday-card th,.tuesday-card td{padding:2px 3px}
+  .tuesday-card tbody tr:nth-child(4){border-bottom:3px solid #0057B8}
+  .tuesday-card tbody tr:nth-child(5) td{border-top:3px solid #0057B8}
+}
+</style>
+
 </head>
 <body>
 <div id="app">
@@ -653,7 +679,7 @@ function pauseResume(){running=!running;document.querySelector('.controls button
 buildScreens();
 loadAll();
 setInterval(loadAll,15000);
-setInterval(()=>{if(running)next()},15000);
+setInterval(()=>{if(running)next()},10000);
 </script>
 </body>
 </html>
