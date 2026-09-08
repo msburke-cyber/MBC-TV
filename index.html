@@ -267,6 +267,101 @@ tbody tr.is-moorabbin td{
 }
 </style>
 
+
+<style id="tv-landscape-fit">
+/* Samsung TV / large-screen browser: keep the whole display inside the
+   visible 16:9 browser viewport. The iPad rules remain unchanged. */
+@media (min-width:1401px) and (orientation:landscape){
+  #app{
+    padding:10px 24px;
+    min-height:100vh;
+    overflow:hidden;
+  }
+  header{
+    margin-bottom:8px;
+    gap:12px;
+  }
+  h1{
+    font-size:42px;
+    line-height:1.05;
+  }
+  .sub{
+    font-size:18px;
+    margin-top:2px;
+  }
+  #updated{font-size:12px}
+
+  .title{
+    font-size:30px;
+    margin:3px 0 8px;
+    line-height:1.05;
+  }
+  .meta{
+    font-size:14px;
+    margin-bottom:6px;
+  }
+
+  /* Individual Saturday ladders */
+  table{
+    font-size:24px;
+  }
+  th,td{
+    padding:5px 8px;
+    line-height:1.05;
+  }
+
+  /* Consolidated Saturday results */
+  .consolidated-results-screen{
+    padding:7px 10px;
+  }
+  .consolidated-results-screen .cr-title{
+    font-size:34px;
+    margin-bottom:3px;
+  }
+  .consolidated-results-screen .cr-round{
+    font-size:15px;
+    margin-bottom:5px;
+  }
+  .cr-grid{
+    gap:6px 8px;
+  }
+  .cr-card .cr-head{
+    padding:4px 7px;
+    font-size:18px;
+  }
+  .cr-table{
+    font-size:15px;
+  }
+  .cr-table th,.cr-table td{
+    padding:3px 5px;
+  }
+
+  /* Midweek and Tuesday 2x2/3-column compact screens */
+  .midweek-screen-wrap,.tuesday-screen-wrap{
+    padding:5px 7px;
+  }
+  .midweek-screen-wrap .mw-title,.tuesday-screen-wrap .tn-title{
+    font-size:30px;
+    margin-bottom:4px;
+  }
+  .midweek-grid,.tuesday-grid{
+    gap:5px 7px;
+  }
+  .midweek-card h3,.tuesday-card h3{
+    padding:4px;
+    font-size:20px;
+  }
+  .midweek-card table,.tuesday-card table{
+    font-size:15px;
+    line-height:1;
+  }
+  .midweek-card th,.midweek-card td,
+  .tuesday-card th,.tuesday-card td{
+    padding:3px 4px;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="app">
