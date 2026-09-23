@@ -480,27 +480,32 @@ tbody tr.is-moorabbin td{
 <script>
 const API='https://api.bowlslink.com.au/results-api';
 const SIDES=[
- {side:'Moorabbin 1',division:1,section:3,id:'1c41f56a-5ae7-4f9d-946c-a48290737905'},
- {side:'Moorabbin 2',division:3,section:7,id:'281725b1-ec9c-4dd1-859c-7edbc7e6e0f5'},
- {side:'Moorabbin 3',division:4,section:7,id:'c7f527d0-d2f4-471c-bfcc-877be369e54a'},
- {side:'Moorabbin 4',division:5,section:7,id:'f943d1ad-6e95-4cab-bc17-642a6413e243'},
- {side:'Moorabbin 5',division:6,section:7,id:'8be3fe65-4b53-4864-bf13-e46d3c8fef3e'}
+ {side:'Moorabbin 1',division:1,section:3,id:'edef60fa-ab99-4b0d-808b-d12705045d5a'},
+ {side:'Moorabbin 2',division:2,section:7,id:'235b23e2-6439-41ce-9496-5ba1e7bad93f'},
+ {side:'Moorabbin 3',division:4,section:5,id:'75bb1ac6-df23-46cc-935f-32f3a4ed626b'},
+ {side:'Moorabbin 4',division:4,section:7,id:'75bb1ac6-df23-46cc-935f-32f3a4ed626b'},
+ {side:'Moorabbin 5',division:6,section:7,id:'7b49fc55-f3df-47c6-a39f-d45cf26af9f2'},
+ {side:'Moorabbin 6',division:8,section:5,id:'be1987f2-5aa4-4e65-a30f-e9145c80876f'}
 ];
 
 
 const SATURDAY_CONSOLIDATED=[
- {side:'Moorabbin 1',id:'1c41f56a-5ae7-4f9d-946c-a48290737905',label:'Div 1 — Sec 3'},
- {side:'Moorabbin 2',id:'281725b1-ec9c-4dd1-859c-7edbc7e6e0f5',label:'Div 3 — Sec 7'},
- {side:'Moorabbin 3',id:'c7f527d0-d2f4-471c-bfcc-877be369e54a',label:'Div 4 — Sec 7'},
- {side:'Moorabbin 4',id:'f943d1ad-6e95-4cab-bc17-642a6413e243',label:'Div 5 — Sec 7'},
- {side:'Moorabbin 5',id:'8be3fe65-4b53-4864-bf13-e46d3c8fef3e',label:'Div 6 — Sec 7'}
+ {side:'Moorabbin 1',id:'edef60fa-ab99-4b0d-808b-d12705045d5a',division:1,section:3,label:'Div 1 — Sec 3'},
+ {side:'Moorabbin 2',id:'235b23e2-6439-41ce-9496-5ba1e7bad93f',division:2,section:7,label:'Div 2 — Sec 7'},
+ {side:'Moorabbin 3',id:'75bb1ac6-df23-46cc-935f-32f3a4ed626b',division:4,section:5,label:'Div 4 — Sec 5'},
+ {side:'Moorabbin 4',id:'75bb1ac6-df23-46cc-935f-32f3a4ed626b',division:4,section:7,label:'Div 4 — Sec 7'},
+ {side:'Moorabbin 5',id:'7b49fc55-f3df-47c6-a39f-d45cf26af9f2',division:6,section:7,label:'Div 6 — Sec 7'},
+ {side:'Moorabbin 6',id:'be1987f2-5aa4-4e65-a30f-e9145c80876f',division:8,section:5,label:'Div 8 — Sec 5'}
 ];
 
 
 const MIDWEEK=[
- {side:'Moorabbin 1',id:'ad7cbf21-c0a3-44a2-8c28-ce79df287533'},
- {side:'Moorabbin 2',id:'1eb60506-920d-49d3-bebb-6267e2440bff'},
- {side:'Moorabbin 3',id:'fbfe145f-d10d-4a14-9004-5e6dabbb4464'}
+ {side:'Moorabbin Midweek 1',division:1,section:3,id:'b78cdbed-f990-4786-88f0-f6dd5968ee12'},
+ {side:'Moorabbin Midweek 2',division:3,section:7,id:'2fcfaed4-af29-44a8-a650-060e8757b2f7'},
+ {side:'Moorabbin Midweek 3',division:5,section:8,id:'2dfba6b0-d65b-4c4f-902a-ef18ea77fc1a'},
+ {side:'Moorabbin 6-a-side',division:null,section:null,id:'3161bc48-4215-4848-ad62-6cdf5a95bb01'},
+ {side:'Moorabbin 7-a-side 1',division:1,section:3,id:'a7d5c3d3-08ca-4ad3-93f7-9f1de13d78e9'},
+ {side:'Moorabbin 7-a-side 2',division:2,section:4,id:'aa8119d4-5e39-4ad9-a766-007cc2c18a0f'}
 ];
 const TUESDAY=[
  {side:'Moorabbin Tuesday 1',id:'49ee7645-63ff-4feb-b7a8-769f187a1e84'},
@@ -524,13 +529,13 @@ function extractCompetitionName(p){
  return c?.attributes?.name || '';
 }
 
-function parseCompetition(p){
+function parseCompetition(p,forcedPool=null){
  const competitors=attrsMap(p,'competitor');
  const results=attrsMap(p,'multiFormatResult');
  const matches=includes(p,'match');
  const moorId=Object.keys(competitors).find(id=>/moorabbin/i.test(competitors[id].name||''));
- let pool=null;
- if(moorId){
+ let pool=forcedPool;
+ if(pool===null && moorId){
    const mm=matches.find(m=>{
      const a=m.includes?.competitorOne?.id,b=m.includes?.competitorTwo?.id;
      return a===moorId||b===moorId;
@@ -727,7 +732,7 @@ async function loadConsolidatedResults(){
  for(const cfg of SATURDAY_CONSOLIDATED){
   try{
    const p=await get('/competition/'+cfg.id+'/matches');
-   const parsed=parseCompetition(p);
+   const parsed=parseCompetition(p,cfg.section);
    const round=parsed.currentRound??1;
    if(commonRound===null) commonRound=round;
 
@@ -790,14 +795,14 @@ async function loadMidweekLadders(){
  for(const cfg of MIDWEEK){
    try{
      const p=await get('/competition/'+cfg.id+'/matches');
-     const parsed=parseCompetition(p);
+     const parsed=parseCompetition(p,cfg.section);
      const ladder=await computeLadder(parsed);
      const rows=ladder.map(x=>`<tr class="${/moorabbin/i.test(x.name)?'highlight':''}">
        <td>${x.pos}</td><td>${esc(x.name)}</td><td>${x.played}</td><td>${x.wins}</td><td>${x.losses}</td><td>${x.draws}</td><td>${x.points}</td>
      </tr>`).join('');
      cards.push(`<section class="midweek-card">
        <h3>${esc(cfg.side)}</h3>
-       <div class="mw-meta">Section 7</div>
+       <div class="mw-meta">${cfg.division?`Div ${cfg.division} • Sec ${cfg.section}`:'6-a-side'}</div>
        <table><thead><tr><th>Pos</th><th>Club</th><th>P</th><th>W</th><th>L</th><th>D</th><th>Pts</th></tr></thead>
        <tbody>${rows || '<tr><td colspan="7">No ladder data</td></tr>'}</tbody></table>
      </section>`);
@@ -816,7 +821,7 @@ async function loadSaturdayLadders(){
  for(const side of SIDES){
   try{
    const p=await get('/competition/'+side.id+'/matches');
-   const parsed=parseCompetition(p);
+   const parsed=parseCompetition(p,side.section);
    parsed.id=side.id; parsed.division=side.division; parsed.section=side.section;
    const ladder=await computeLadder(parsed);
    const rows=ladder.map(x=>`<tr class="${/moorabbin/i.test(x.name)?'highlight':''}">
@@ -833,8 +838,6 @@ async function loadSaturdayLadders(){
    cards.push(`<section class="saturday-ladder-card"><h3>${esc(side.side)}</h3><div class="notice error">Unable to read BowlsLink — retrying…</div></section>`);
   }
  }
- // A sixth grid position is intentionally left available for future expansion.
- cards.push('<div aria-hidden="true"></div>');
  host.innerHTML=`<div class="saturday-ladders-wrap"><div class="sl-title">SATURDAY LADDERS</div><div class="saturday-ladders-grid">${cards.join('')}</div></div>`;
 }
 
@@ -875,7 +878,7 @@ async function loadMidweekResults(){
  const cards=[];
  for(const cfg of MIDWEEK){
   try{
-   const parsed=parseCompetition(await get('/competition/'+cfg.id+'/matches'));
+   const parsed=parseCompetition(await get('/competition/'+cfg.id+'/matches'),cfg.section);
    const matches=(parsed.matches||[]).slice().sort((a,b)=>Number(a.round)-Number(b.round));
    let body='';
    if(!matches.length){
@@ -905,7 +908,7 @@ async function loadTuesdayResults(){
  const host=document.getElementById('tuesdayResults');if(!host)return;const cards=[];
  for(const cfg of TUESDAY){
   try{
-   const parsed=parseCompetition(await get('/competition/'+cfg.id+'/matches'));
+   const parsed=parseCompetition(await get('/competition/'+cfg.id+'/matches'),cfg.section);
    const matches=(parsed.matches||[]).slice().sort((a,b)=>Number(a.round)-Number(b.round));
    let body='';
    if(!matches.length){
