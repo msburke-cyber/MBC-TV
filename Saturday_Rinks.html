@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Moorabbin Saturday — Rink Scores & Players</title>
+<style>
+:root{--blue:#0057B8;--deep:#003B7A;--light:#EAF3FF;--ink:#142235;--muted:#52657b;--line:#cbd8e8;--green:#087a42;--red:#b42318}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,var(--blue),var(--deep));color:var(--ink)}
+body{padding:12px 18px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;color:#fff;border-bottom:4px solid #fff;padding:0 2px 8px;margin-bottom:9px}
+h1{margin:0;font-size:clamp(25px,2.8vw,42px);line-height:1.05}
+.subtitle{font-size:clamp(13px,1.1vw,17px);margin-top:4px;color:#eaf3ff}
+#updated{font-size:12px;text-align:right;white-space:nowrap;color:#fff}
+#roundLabel{font-weight:800;font-size:clamp(15px,1.25vw,20px);color:#fff;text-align:center;margin:7px 0 10px}
+#grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:9px;min-height:calc(100vh - 108px)}
+.side-card{background:#fff;border:2px solid rgba(255,255,255,.85);border-radius:10px;overflow:hidden;min-width:0;display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.card-head{background:var(--blue);color:#fff;padding:6px 9px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.side-title{font-size:clamp(16px,1.45vw,22px);font-weight:900;white-space:nowrap}
+.division{font-size:clamp(10px,.8vw,13px);font-weight:700;text-align:right;white-space:nowrap}
+.matchup{padding:6px 8px 5px;border-bottom:1px solid var(--line);text-align:center}
+.teams{font-size:clamp(13px,1.05vw,17px);font-weight:800;line-height:1.15}
+.overall{font-size:clamp(18px,1.6vw,25px);font-weight:900;color:var(--blue);margin-top:3px}
+.match-state{font-size:11px;color:var(--muted);font-weight:700;margin-top:2px}
+.extract-state{font-size:10px;font-weight:800;margin-top:4px;padding:3px 5px;border-radius:4px;background:#eef2f7;color:#334155}
+.extract-state.ok{background:#e5f7ec;color:#086338}
+.extract-state.warn{background:#fff3cd;color:#795900}
+.extract-state.fail{background:#fde8e7;color:#a32018}
+.rinks{padding:4px 7px 6px;display:flex;flex-direction:column;gap:3px;flex:1}
+.rink-row{display:grid;grid-template-columns:34px minmax(0,1fr) 54px minmax(0,.62fr);gap:4px;align-items:center;border:1px solid #e0e8f1;border-radius:5px;padding:3px 4px;min-height:38px}
+.rink-label{font-size:clamp(11px,.85vw,14px);font-weight:900;color:var(--blue)}
+.skip{font-size:clamp(9px,.68vw,11px);line-height:1.12;min-width:0;overflow-wrap:anywhere}
+.skip strong{display:block;font-size:.9em;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.02em}.player-list{font-size:clamp(9px,.68vw,11px);line-height:1.15;overflow-wrap:anywhere}.player-list span{display:block}
+.rink-score{text-align:center;font-size:clamp(15px,1.25vw,20px);font-weight:900;white-space:nowrap}
+.rink-score.pending{font-size:12px;color:var(--muted)}
+.rink-row.moor-win{background:#eaf8f0;border-color:#8ed2aa}
+.rink-row.opp-win{background:#fff1f0;border-color:#edb3af}
+.rink-row.draw{background:#f2f6fb}
+.note{padding:12px;background:#fff3cd;color:#664d03;border-radius:8px;font-size:15px;margin:10px 0}
+.footer{color:#fff;font-size:11px;text-align:center;margin-top:7px}
+@media(max-width:1050px){body{padding:8px}.side-title{font-size:16px}.division{font-size:10px}.teams{font-size:13px}.skip,.player-list{font-size:9px}.rink-row{grid-template-columns:30px minmax(0,1fr) 46px minmax(0,.62fr);gap:3px;padding:3px}.rink-score{font-size:14px}}
+@media(max-width:760px){#grid{grid-template-columns:1fr;grid-template-rows:none}.side-card{min-height:250px}.rink-row{grid-template-columns:40px minmax(0,1fr) 55px minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>MOORABBIN SATURDAY PENNANT</h1><div class="subtitle">Current season · latest played round · rink-by-rink player extraction</div></div>
+  <div id="updated">Connecting to BowlsLink…</div>
+</header>
+<div id="roundLabel">Loading current round…</div>
+<div id="grid"></div>
+<div class="footer">Moorabbin Bowls Club · Current season rink and player display · Automatically refreshes every 15 seconds</div>
+<script>
+const API='https://api.bowlslink.com.au/results-api';
+// Current-season mode: select the latest played round from the current competition data.
+const SIDES=[
+ {side:'Moorabbin 1',division:1,section:3,id:'edef60fa-ab99-4b0d-808b-d12705045d5a'},
+ {side:'Moorabbin 2',division:2,section:7,id:'235b23e2-6439-41ce-9496-5ba1e7bad93f'},
+ {side:'Moorabbin 3',division:4,section:5,id:'75bb1ac6-df23-46cc-935f-32f3a4ed626b'},
+ {side:'Moorabbin 4',division:4,section:7,id:'75bb1ac6-df23-46cc-935f-32f3a4ed626b'},
+ {side:'Moorabbin 5',division:6,section:7,id:'7b49fc55-f3df-47c6-a39f-d45cf26af9f2'},
+ {side:'Moorabbin 6',division:8,section:5,id:'be1987f2-5aa4-4e65-a30f-e9145c80876f'}
+];
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+async function get(path){const r=await fetch(API+path+'?v='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(r.status+' '+r.statusText);return r.json()}
+function resources(p,type){return (p?.include||[]).filter(x=>x.type===type)}
+function attrMap(p,type){const o={};resources(p,type).forEach(x=>o[x.id]=x.attributes||{});return o}
+function parseMatches(p,forcedPool){
+ const competitors=attrMap(p,'competitor'),results=attrMap(p,'multiFormatResult');
+ const matches=resources(p,'match').filter(m=>m.attributes?.pool===forcedPool&&!m.attributes?.isFinalsSeries);
+ return matches.map(m=>{
+  const c1=m.includes?.competitorOne?.id,c2=m.includes?.competitorTwo?.id;
+  if(!c1||!c2)return null;
+  const rid=m.includes?.result?.id,r=rid?results[rid]:null,done=!!r?.isCompleted;
+  return {id:m.id,round:Number(m.attributes?.round??0),dateUtc:m.attributes?.matchDayUtc??null,
+   n1:competitors[c1]?.name||'Unknown',n2:competitors[c2]?.name||'Unknown',c1,c2,
+   s1:done?Number(r.competitorOneScore??0):null,s2:done?Number(r.competitorTwoScore??0):null,completed:done};
+ }).filter(Boolean).sort((a,b)=>a.round-b.round);
+}
+function dayKey(value){
+ if(!value)return null;
+ const d=new Date(value);
+ if(!Number.isFinite(d.getTime()))return null;
+ return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();
+}
+function currentRound(rows){
+ const today=dayKey(new Date());
+ const rounds=[...new Set(rows.map(m=>m.round))].sort((a,b)=>a-b);
+ const byRound=rounds.map(round=>({round,dates:rows.filter(m=>m.round===round).map(m=>dayKey(m.dateUtc)).filter(x=>x!==null)}));
+ const past=byRound.filter(x=>x.dates.length&&Math.min(...x.dates)<=today);
+ if(past.length){
+  const latestDay=Math.max(...past.flatMap(x=>x.dates.filter(d=>d<=today)));
+  const candidate=past.filter(x=>x.dates.some(d=>d===latestDay)).map(x=>x.round);
+  return Math.max(...candidate);
+ }
+ return rounds.length?Math.min(...rounds):null;
+}
+function playerName(attrs){
+ if(!attrs)return '';
+ for(const k of ['displayName','fullName','name','playerName','formattedName'])if(attrs[k])return String(attrs[k]);
+ const first=attrs.firstName||attrs.givenName||attrs.forename||'';
+ const last=attrs.lastName||attrs.familyName||attrs.surname||'';
+ return [first,last].filter(Boolean).join(' ').trim();
+}
+function positionText(cp){
+ const a=cp?.attributes||{};
+ return String(a.assignedPosition??a.defaultPosition??a.positionName??a.position??a.role??a.playerPosition??a.order??'').toLowerCase();
+}
+function getPlayersFromRefs(refs,cpMap){
+ const list=refs.map(ref=>cpMap[ref.id]).filter(Boolean);
+ return list.map((cp,index)=>({
+  name:playerName(cp.attributes)||playerName(cp.includes?.entrant?.attributes)||playerName(cp.includes?.player?.attributes),
+  position:positionText(cp), index
+ })).filter(p=>p.name).sort((a,b)=>{
+  const rank=t=>/lead/.test(t)?1:/second/.test(t)?2:/third/.test(t)?3:/skip|fourth|4th/.test(t)?4:99;
+  return rank(a.position)-rank(b.position)||a.index-b.index;
+ }).map(p=>p.name);
+}
+function parseRinks(detail,match){
+ const inc=detail?.include||[];
+ const cpMap={},people={};
+ for(const x of inc){
+  if(x.type==='competitorPlayer')cpMap[x.id]=x;
+  if(['player','member','bowler'].includes(x.type))people[x.id]=x.attributes||{};
+ }
+ const raw=[];
+ for(const x of inc){
+  if(x.type!=='rinkMatchResult')continue;
+  const a=x.attributes||{},oneRefs=x.includes?.competitorOnePlayers||[],twoRefs=x.includes?.competitorTwoPlayers||[];
+  const oneIds=oneRefs.map(z=>cpMap[z.id]?.includes?.competitor?.id||null);
+  const twoIds=twoRefs.map(z=>cpMap[z.id]?.includes?.competitor?.id||null);
+  let c1=oneIds.find(Boolean)||x.includes?.competitorOne?.id||null;
+  let c2=twoIds.find(Boolean)||x.includes?.competitorTwo?.id||null;
+  if(!((c1===match.c1&&c2===match.c2)||(c1===match.c2&&c2===match.c1)))continue;
+  const num=(keys)=>{for(const k of keys){if(a[k]!==undefined&&a[k]!==null&&a[k]!==''){const n=Number(a[k]);if(Number.isFinite(n))return n}}return null};
+  const raw1=num(['competitorOneShots','competitorOneScore','scoreOne','teamOneScore','oneScore','shotsOne']);
+  const raw2=num(['competitorTwoShots','competitorTwoScore','scoreTwo','teamTwoScore','twoScore','shotsTwo']);
+  if(raw1===null||raw2===null)continue;
+  const flipped=c1===match.c2;
+  const s1=flipped?raw2:raw1,s2=flipped?raw1:raw2;
+  const refs1=flipped?twoRefs:oneRefs,refs2=flipped?oneRefs:twoRefs;
+  const spec=String(a.specialisation||x.attributes?.specialisation||'');
+  const specNum=Number((spec.match(/(?:team|rink)\s*(\d+)/i)||[])[1]);
+  const n=specNum||num(['rinkNumber','rink','rinkNo','number','rinkOrder','position','sequence']);
+  raw.push({number:n,s1,s2,players1:getPlayersFromRefs(refs1,cpMap),players2:getPlayersFromRefs(refs2,cpMap),sort:n??999});
+ }
+ raw.sort((a,b)=>a.sort-b.sort);
+ return raw.map((r,i)=>({...r,number:r.number??i+1}));
+}
+function statusText(m,side){
+ if(!m)return 'Fixture not found';
+ if(!m.completed)return 'Scores not entered yet';
+ if(m.s1===m.s2)return 'DRAW';
+ return ((/moorabbin/i.test(m.n1)&&m.s1>m.s2)||(/moorabbin/i.test(m.n2)&&m.s2>m.s1))?'MOORABBIN WIN':'MOORABBIN LOSS';
+}
+function renderCard(cfg,match,detail,error){
+ const div=`DIV ${cfg.division} · SEC ${cfg.section}`;
+ if(error)return `<section class="side-card"><div class="card-head"><span class="side-title">${esc(cfg.side)}</span><span class="division">${div}</span></div><div class="note">API extraction FAILED: ${esc(error.message||'Unknown error')}. Retrying automatically.</div></section>`;
+ if(!match)return `<section class="side-card"><div class="card-head"><span class="side-title">${esc(cfg.side)}</span><span class="division">${div}</span></div><div class="note">API responded, but no Moorabbin fixture was extracted for the selected round. Matches found: ${cfg.matchCount??0}. Round detected: ${cfg.round??'none'}.</div></section>`;
+ const isM1=/moorabbin/i.test(match.n1);
+ const moName=isM1?match.n1:match.n2,oppName=isM1?match.n2:match.n1;
+ const overall=match.completed?`${match.s1} – ${match.s2}`:'VS';
+ const rinks=parseRinks(detail,match);
+ const scoreCount=rinks.filter(r=>r.s1!==null&&r.s2!==null).length;
+ const playerCount=rinks.reduce((n,r)=>n+r.players1.length+r.players2.length,0);
+ const moPlayers=rinks.reduce((n,r)=>n+((/moorabbin/i.test(match.n1)?r.players1:r.players2).length),0);
+ const extractionClass=scoreCount===4&&moPlayers===16?'ok':scoreCount>0?'warn':'fail';
+ const extractionText=`EXTRACTION: ${scoreCount}/4 rink scores · ${moPlayers}/16 Moorabbin players${detail?' · match detail loaded':' · match detail FAILED'}`;
+ const rows=[];
+ for(let i=0;i<4;i++){
+  const r=rinks[i];
+  if(!r){rows.push(`<div class="rink-row"><div class="rink-label">RINK ${i+1}</div><div class="player-list"><strong>${esc(moName)}</strong>Players unavailable</div><div class="rink-score pending">—</div><div class="skip"><strong>Opposition</strong>Score pending</div></div>`);continue;}
+  const moScore=isM1?r.s1:r.s2,oppScore=isM1?r.s2:r.s1;
+  const moPlayers=isM1?r.players1:r.players2;
+  const cls=moScore>oppScore?'moor-win':moScore<oppScore?'opp-win':'draw';
+  rows.push(`<div class="rink-row ${cls}"><div class="rink-label">RINK ${esc(r.number)}</div><div class="player-list"><strong>${esc(moName)}</strong>${moPlayers.length?moPlayers.map(n=>`<span>${esc(n)}</span>`).join(''):'Players not extracted'}</div><div class="rink-score">${moScore}–${oppScore}</div><div class="skip"><strong>Opposition</strong>Rink score</div></div>`);
+ }
+ return `<section class="side-card">
+  <div class="card-head"><span class="side-title">${esc(cfg.side)}</span><span class="division">${div}</span></div>
+  <div class="matchup"><div class="teams">${esc(moName)} <span style="color:#657384">vs</span> ${esc(oppName)}</div><div class="overall">${overall}</div><div class="match-state">${esc(statusText(match,cfg.side))}</div><div class="extract-state ${extractionClass}">${esc(extractionText)}</div></div>
+  <div class="rinks">${rows.join('')}</div>
+ </section>`;
+}
+async function load(){
+ const cards=await Promise.all(SIDES.map(async cfg=>{
+  try{
+   const comp=await get('/competition/'+cfg.id+'/matches');
+   const rows=parseMatches(comp,cfg.section);
+   const round=currentRound(rows);
+   const roundRows=round===null?[]:rows.filter(m=>m.round===round);
+   const match=roundRows.find(m=>/moorabbin/i.test(m.n1)||/moorabbin/i.test(m.n2))||null;
+   let detail=null,detailError=null;
+   if(match){try{detail=await get('/match/'+match.id)}catch(e){detailError=e}}
+   return {cfg,match,detail,detailError,round,matchCount:roundRows.length,error:false};
+  }catch(e){console.error(cfg.side,e);return {cfg,error:e,round:null};}
+ }));
+ const roundNums=cards.map(x=>x.round).filter(x=>x!==null&&x!==undefined);
+ const common=roundNums.length?Math.max(...roundNums):null;
+ document.getElementById('roundLabel').textContent=common===null?'CURRENT SEASON · NO ROUND IDENTIFIED':`CURRENT SEASON · ROUND ${common} · LIVE RESULTS`; 
+ document.getElementById('grid').innerHTML=cards.map(x=>renderCard(x.cfg,x.match,x.detail,x.error)).join('');
+ const failures=cards.filter(x=>x.error).length;
+ const detailsFailed=cards.filter(x=>x.match&&x.detailError).length;
+ const extracted=cards.filter(x=>x.match&&x.detail).map(x=>parseRinks(x.detail,x.match));
+ const rinkTotal=extracted.reduce((n,rs)=>n+rs.length,0);
+ const playerTotal=extracted.reduce((n,rs)=>n+rs.reduce((k,r)=>k+r.players1.length+r.players2.length,0),0);
+ document.getElementById('updated').textContent=`Updated ${new Date().toLocaleTimeString()} · API errors ${failures} · rinks ${rinkTotal} · players ${playerTotal}`;
+}
+load();
+setInterval(load,15000);
+</script>
+</body>
+</html>
