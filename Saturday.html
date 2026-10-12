@@ -569,8 +569,28 @@ function parseCompetition(p,forcedPool=null){
  }
  allRows.sort((a,b)=>Number(a.round)-Number(b.round));
 
- const rounds=allRows.map(m=>Number(m.round)).filter(Number.isFinite);
- const currentRound=rounds.length?Math.max(...rounds):null;
+ // Choose the round by fixture date, not by whether results have arrived.
+ // Show the round with the most recent match date on or before today's local date.
+ // If a round is scheduled for today, it qualifies and will be shown.
+ const rounds=[...new Set(allRows.map(m=>Number(m.round)).filter(Number.isFinite))].sort((a,b)=>a-b);
+ const localToday=new Date();
+ const todayKey=localToday.getFullYear()+'-'+String(localToday.getMonth()+1).padStart(2,'0')+'-'+String(localToday.getDate()).padStart(2,'0');
+ const dateKey=value=>{
+   if(!value) return null;
+   const raw=String(value);
+   const match=raw.match(/^(\d{4}-\d{2}-\d{2})/);
+   if(match) return match[1];
+   const d=new Date(value);
+   if(Number.isNaN(d.getTime())) return null;
+   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ };
+ const datedRounds=rounds.map(round=>({round,dates:allRows.filter(m=>Number(m.round)===round).map(m=>dateKey(m.dateUtc)).filter(Boolean)}))
+   .filter(x=>x.dates.length && x.dates.some(d=>d<=todayKey))
+   .map(x=>({round:x.round,lastDate:x.dates.filter(d=>d<=todayKey).sort().at(-1)}))
+   .sort((a,b)=>a.lastDate.localeCompare(b.lastDate)||a.round-b.round);
+ const currentRound=datedRounds.length
+   ? datedRounds[datedRounds.length-1].round
+   : (rounds.length?rounds[0]:null);
  const sectionMatches=allRows.filter(m=>
    currentRound===null || Number(m.round)===currentRound
  );
