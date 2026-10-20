@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Moorabbin Saturday — Rink Scores & Players</title>
+<style>
+:root{--blue:#0057B8;--deep:#003B7A;--light:#EAF3FF;--ink:#142235;--muted:#52657b;--line:#cbd8e8;--green:#087a42;--red:#b42318}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,var(--blue),var(--deep));color:var(--ink)}
+body{padding:12px 18px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;color:#fff;border-bottom:4px solid #fff;padding:0 2px 8px;margin-bottom:9px}
+h1{margin:0;font-size:clamp(25px,2.8vw,42px);line-height:1.05}
+.subtitle{font-size:clamp(13px,1.1vw,17px);margin-top:4px;color:#eaf3ff}
+#updated{font-size:12px;text-align:right;white-space:nowrap;color:#fff}
+#roundLabel{font-weight:800;font-size:clamp(15px,1.25vw,20px);color:#fff;text-align:center;margin:7px 0 10px}
+#grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:9px;min-height:calc(100vh - 108px)}
+.side-card{background:#fff;border:2px solid rgba(255,255,255,.85);border-radius:10px;overflow:hidden;min-width:0;display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.card-head{background:var(--blue);color:#fff;padding:6px 9px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.side-title{font-size:clamp(16px,1.45vw,22px);font-weight:900;white-space:nowrap}
+.division{font-size:clamp(10px,.8vw,13px);font-weight:700;text-align:right;white-space:nowrap}
+.matchup{padding:6px 8px 5px;border-bottom:1px solid var(--line);text-align:center}
+.teams{font-size:clamp(13px,1.05vw,17px);font-weight:800;line-height:1.15}
+.overall{font-size:clamp(18px,1.6vw,25px);font-weight:900;color:var(--blue);margin-top:3px}
+.match-state{font-size:11px;color:var(--muted);font-weight:700;margin-top:2px}
+.extract-state{font-size:10px;font-weight:800;margin-top:4px;padding:3px 5px;border-radius:4px;background:#eef2f7;color:#334155}
+.extract-state.ok{background:#e5f7ec;color:#086338}
+.extract-state.warn{background:#fff3cd;color:#795900}
+.extract-state.fail{background:#fde8e7;color:#a32018}
+.rinks{padding:4px 7px 6px;display:flex;flex-direction:column;gap:3px;flex:1}
+.rink-row{display:grid;grid-template-columns:34px minmax(0,1fr) 58px;gap:5px;align-items:center;border:1px solid #e0e8f1;border-radius:5px;padding:4px 5px;min-height:42px}
+.rink-label{font-size:clamp(11px,.85vw,14px);font-weight:900;color:var(--blue)}
+.skip{font-size:clamp(9px,.68vw,11px);line-height:1.12;min-width:0;overflow-wrap:anywhere}
+.skip strong{display:block;font-size:.9em;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.02em}.player-list{font-size:clamp(11px,.9vw,14px);font-weight:600;line-height:1.12;overflow-wrap:anywhere;min-width:0}.player-list span{display:block;overflow-wrap:anywhere}
+.rink-score{text-align:center;font-size:clamp(15px,1.25vw,20px);font-weight:900;white-space:nowrap}
+.rink-score.pending{font-size:12px;color:var(--muted)}
+.rink-row.moor-win{background:#eaf8f0;border-color:#8ed2aa}
+.rink-row.opp-win{background:#fff1f0;border-color:#edb3af}
+.rink-row.draw{background:#f2f6fb}
+.rink-row.biggest-win{outline:3px solid #ffd43b;outline-offset:-3px;box-shadow:inset 0 0 0 2px #8a5b00}
+.rink-row{position:relative}
+.note{padding:12px;background:#fff3cd;color:#664d03;border-radius:8px;font-size:15px;margin:10px 0}
+.footer{color:#fff;font-size:11px;text-align:center;margin-top:7px}
+@media(max-width:1050px){body{padding:8px}.side-title{font-size:16px}.division{font-size:10px}.teams{font-size:13px}.skip{font-size:9px}.player-list{font-size:12px}.rink-row{grid-template-columns:30px minmax(0,1fr) 50px;gap:4px;padding:3px}.rink-score{font-size:14px}}
+@media(max-width:760px){#grid{grid-template-columns:1fr;grid-template-rows:none}.side-card{min-height:250px}.rink-row{grid-template-columns:40px minmax(0,1fr) 55px}}
+
+/* Samsung TV / embedded Saturday screen: fit all six sides without clipping. */
+@media (min-width:1000px) and (orientation:landscape){
+ html,body{height:100%;min-height:0;overflow:hidden}
+ body{padding:5px 10px}
+ header{gap:10px;border-bottom-width:2px;padding:0 2px 4px;margin-bottom:4px}
+ h1{font-size:clamp(21px,1.8vw,30px);line-height:1}
+ .subtitle{font-size:clamp(10px,.8vw,13px);margin-top:2px}
+ #updated{font-size:9px}
+ #roundLabel{font-size:clamp(11px,.9vw,15px);margin:3px 0 4px}
+ #grid{height:calc(100vh - 68px);min-height:0;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:5px}
+ .side-card{min-height:0;border-width:1px;border-radius:6px;box-shadow:none}
+ .card-head{padding:3px 6px;gap:4px}
+ .side-title{font-size:clamp(12px,1.05vw,17px)}
+ .division{font-size:clamp(8px,.6vw,10px)}
+ .matchup{padding:3px 5px 2px}
+ .teams{font-size:clamp(10px,.8vw,13px);line-height:1.05}
+ .overall{font-size:clamp(14px,1.1vw,18px);margin-top:1px}
+ .match-state{font-size:8px;margin-top:1px}
+ .extract-state{font-size:7px;margin-top:2px;padding:1px 3px}
+ .rinks{padding:2px 4px 3px;gap:2px;min-height:0}
+ .rink-row{grid-template-columns:30px minmax(0,1fr) 48px;gap:4px;padding:3px 4px;min-height:0;border-radius:3px}
+ .rink-label{font-size:clamp(9px,.7vw,11px)}
+ .skip{font-size:9px;line-height:1.02;overflow-wrap:anywhere}
+ .player-list{font-size:clamp(10px,.78vw,13px);line-height:1.12;font-weight:600;overflow-wrap:anywhere}
+ .skip strong{margin-bottom:1px}
+ .player-list span{display:block}
+ .rink-score{font-size:clamp(12px,1vw,16px)}
+ .rink-score.pending{font-size:8px}
+ .note{padding:4px;font-size:9px;margin:3px 0}
+ .footer{font-size:7px;margin-top:2px}
+}
+
+/* Compact banner for the embedded Saturday TV display. */
+@media (min-width:1000px) and (orientation:landscape){
+ header{padding:0 2px 2px !important;margin-bottom:2px !important;gap:6px !important;border-bottom-width:1px !important}
+ h1{font-size:clamp(15px,1.25vw,21px) !important;line-height:1 !important}
+ .subtitle{font-size:clamp(8px,.55vw,10px) !important;margin-top:1px !important;line-height:1 !important}
+ #updated{font-size:7px !important}
+ #roundLabel{font-size:clamp(10px,.72vw,12px) !important;margin:2px 0 3px !important}
+ #grid{height:calc(100vh - 48px) !important;gap:4px !important}
+ .footer{font-size:6px !important;margin-top:1px !important}
+}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>MOORABBIN SATURDAY PENNANT</h1><div class="subtitle">Current season · round selected by Melbourne fixture date · rink-by-rink player extraction</div></div>
+  <div id="updated">Connecting to BowlsLink…</div>
+</header>
+<div id="roundLabel">Loading current round…</div>
+<div id="grid"></div>
+<div class="footer">Moorabbin Bowls Club · Current season rink and player display · Automatically refreshes every 15 seconds</div>
+<script>
+const API='https://api.bowlslink.com.au/results-api';
+// Current-season mode: start at Round 1 and use the earliest round with a completed result.
+const SIDES=[
+ {side:'Moorabbin 1',division:1,section:3,id:'edef60fa-ab99-4b0d-808b-d12705045d5a'},
+ {side:'Moorabbin 2',division:2,section:7,id:'235b23e2-6439-41ce-9496-5ba1e7bad93f'},
+ {side:'Moorabbin 3',division:4,section:5,id:'75bb1ac6-df23-46cc-935f-32f3a4ed626b'},
+ {side:'Moorabbin 4',division:4,section:7,id:'75bb1ac6-df23-46cc-935f-32f3a4ed626b'},
+ {side:'Moorabbin 5',division:6,section:7,id:'7b49fc55-f3df-47c6-a39f-d45cf26af9f2'},
+ {side:'Moorabbin 6',division:8,section:5,id:'be1987f2-5aa4-4e65-a30f-e9145c80876f'}
+];
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+async function get(path){const r=await fetch(API+path+'?v='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(r.status+' '+r.statusText);return r.json()}
+function resources(p,type){return (p?.include||[]).filter(x=>x.type===type)}
+function attrMap(p,type){const o={};resources(p,type).forEach(x=>o[x.id]=x.attributes||{});return o}
+function parseMatches(p,forcedPool){
+ const competitors=attrMap(p,'competitor'),results=attrMap(p,'multiFormatResult');
+ const matches=resources(p,'match').filter(m=>m.attributes?.pool===forcedPool&&!m.attributes?.isFinalsSeries);
+ return matches.map(m=>{
+  const c1=m.includes?.competitorOne?.id,c2=m.includes?.competitorTwo?.id;
+  if(!c1||!c2)return null;
+  const rid=m.includes?.result?.id,r=rid?results[rid]:null,done=!!r?.isCompleted;
+  return {id:m.id,round:Number(m.attributes?.round??0),dateUtc:m.attributes?.matchDayUtc??null,
+   n1:competitors[c1]?.name||'Unknown',n2:competitors[c2]?.name||'Unknown',c1,c2,
+   s1:done?Number(r.competitorOneScore??0):null,s2:done?Number(r.competitorTwoScore??0):null,completed:done};
+ }).filter(Boolean).sort((a,b)=>a.round-b.round);
+}
+function dayKey(value){
+  if(value===null||value===undefined||value==='')return null;
+  // BowlsLink matchDayUtc is commonly a Unix timestamp in SECONDS.
+  // JavaScript Date expects milliseconds, so convert seconds before parsing.
+  let d;
+  if(typeof value==='number'||(typeof value==='string'&&/^\d+(?:\.\d+)?$/.test(value.trim()))){
+    const n=Number(value);
+    if(!Number.isFinite(n))return null;
+    d=new Date(Math.abs(n)<1e11?n*1000:n);
+  }else{
+    // A date-only ISO value already represents the fixture's calendar date.
+    if(typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value.trim())){
+      return Number(value.slice(0,4)+value.slice(5,7)+value.slice(8,10));
+    }
+    d=new Date(value);
+  }
+  if(!Number.isFinite(d.getTime()))return null;
+  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Australia/Melbourne',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d);
+  const part=k=>parts.find(p=>p.type===k)?.value;
+  return Number(`${part('year')}${part('month')}${part('day')}`);
+}
+function todayMelbourneKey(){
+ const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Australia/Melbourne',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+ const part=k=>parts.find(p=>p.type===k)?.value;
+ return Number(`${part('year')}${part('month')}${part('day')}`);
+}
+function currentRound(rows){
+  // Choose today's Melbourne fixture round if present; otherwise the latest
+  // round dated before today. Never select a future round merely because its
+  // fixture exists. If no dates are today or in the past, fall back to the
+  // lowest round number (normally Round 1).
+  const today=todayMelbourneKey();
+  const dated=rows.map(m=>({round:Number(m.round),day:dayKey(m.dateUtc)}))
+    .filter(x=>Number.isFinite(x.round)&&x.round>0&&x.day!==null);
+  const todayRows=dated.filter(x=>x.day===today);
+  if(todayRows.length)return Math.min(...todayRows.map(x=>x.round));
+  const pastDays=[...new Set(dated.filter(x=>x.day<today).map(x=>x.day))].sort((a,b)=>b-a);
+  if(pastDays.length){
+    const latest=pastDays[0];
+    return Math.max(...dated.filter(x=>x.day===latest).map(x=>x.round));
+  }
+  const rounds=[...new Set(rows.map(m=>Number(m.round)).filter(n=>Number.isFinite(n)&&n>0))].sort((a,b)=>a-b);
+  return rounds.length?rounds[0]:null;
+}
+function playerName(attrs){
+ if(!attrs)return '';
+ for(const k of ['displayName','fullName','name','playerName','formattedName'])if(attrs[k])return String(attrs[k]);
+ const first=attrs.firstName||attrs.givenName||attrs.forename||'';
+ const last=attrs.lastName||attrs.familyName||attrs.surname||'';
+ return [first,last].filter(Boolean).join(' ').trim();
+}
+function positionText(cp){
+ const a=cp?.attributes||{};
+ return String(a.assignedPosition??a.defaultPosition??a.positionName??a.position??a.role??a.playerPosition??a.order??'').toLowerCase();
+}
+function getPlayersFromRefs(refs,cpMap){
+ const list=refs.map(ref=>cpMap[ref.id]).filter(Boolean);
+ return list.map((cp,index)=>({
+  name:playerName(cp.attributes)||playerName(cp.includes?.entrant?.attributes)||playerName(cp.includes?.player?.attributes),
+  position:positionText(cp), index
+ })).filter(p=>p.name).sort((a,b)=>{
+  const rank=t=>/lead/.test(t)?1:/second/.test(t)?2:/third/.test(t)?3:/skip|fourth|4th/.test(t)?4:99;
+  return rank(a.position)-rank(b.position)||a.index-b.index;
+ }).map(p=>p.name);
+}
+function parseRinks(detail,match){
+ const inc=detail?.include||detail?.included||[];
+ const cpMap={};
+ for(const x of inc){if(x.type==='competitorPlayer')cpMap[x.id]=x;}
+ const raw=[];
+ for(const x of inc){
+  if(x.type!=='rinkMatchResult')continue;
+  const a=x.attributes||{};
+  const oneRefs=x.includes?.competitorOnePlayers||[];
+  const twoRefs=x.includes?.competitorTwoPlayers||[];
+  const onePlayers=oneRefs.map(z=>cpMap[z.id]).filter(Boolean);
+  const twoPlayers=twoRefs.map(z=>cpMap[z.id]).filter(Boolean);
+  const idsFor=players=>[...new Set(players.map(p=>p.includes?.competitor?.id).filter(Boolean))];
+  const oneIds=idsFor(onePlayers),twoIds=idsFor(twoPlayers);
+  let c1=oneIds[0]||x.includes?.competitorOne?.id||null;
+  let c2=twoIds[0]||x.includes?.competitorTwo?.id||null;
+  const rinkRef=x.includes?.rinkMatch?.id||'';
+  const belongsById=!!(match.id && (rinkRef===match.id || rinkRef.endsWith('::'+match.id) || rinkRef.endsWith('/'+match.id)));
+  const belongsByTeams=(c1===match.c1&&c2===match.c2)||(c1===match.c2&&c2===match.c1);
+  if(!belongsById&&!belongsByTeams)continue;
+  const num=keys=>{for(const k of keys){if(a[k]!==undefined&&a[k]!==null&&a[k]!==''){const n=Number(a[k]);if(Number.isFinite(n))return n}}return null};
+  const raw1=num(['competitorOneShots','competitorOneScore','scoreOne','teamOneScore','oneScore','shotsOne']);
+  const raw2=num(['competitorTwoShots','competitorTwoScore','scoreTwo','teamTwoScore','twoScore','shotsTwo']);
+  if(raw1===null||raw2===null)continue;
+  // Use player-linked competitor IDs to orient scores to the schedule's team order.
+  // If that relationship is absent, retain API competitor-one/two order rather than dropping valid rink scores.
+  let flipped=false;
+  if(c1===match.c2&&c2===match.c1)flipped=true;
+  else if(!belongsByTeams && oneIds.length && twoIds.length){
+   if(oneIds.includes(match.c2)||twoIds.includes(match.c1))flipped=true;
+  }
+  const s1=flipped?raw2:raw1,s2=flipped?raw1:raw2;
+  const refs1=flipped?twoRefs:oneRefs,refs2=flipped?oneRefs:twoRefs;
+  const numSpec=String(a.specialisation||'');
+  const specNum=Number((numSpec.match(/(?:team|rink)\s*(\d+)/i)||[])[1]);
+  const n=specNum||num(['rinkNumber','rink','rinkNo','number','rinkOrder','position','sequence']);
+  const names=refs=>refs.map(ref=>cpMap[ref.id]).filter(Boolean).map(cp=>({
+   name:playerName(cp.attributes)||playerName(cp.includes?.entrant?.attributes)||playerName(cp.includes?.player?.attributes),
+   position:positionText(cp)
+  })).filter(p=>p.name).sort((a,b)=>{
+   const rank=t=>/lead/.test(t)?1:/second/.test(t)?2:/third/.test(t)?3:/skip|fourth|4th/.test(t)?4:99;
+   return rank(a.position)-rank(b.position);
+  }).map(p=>({name:p.name,position:/lead/.test(p.position)?'Lead':/second/.test(p.position)?'Second':/third/.test(p.position)?'Third':/skip|fourth|4th/.test(p.position)?'Skip':''}));
+  raw.push({number:n,s1,s2,players1:names(refs1),players2:names(refs2),sort:n??999});
+ }
+ raw.sort((a,b)=>a.sort-b.sort);
+ return raw.map((r,i)=>({...r,number:r.number??i+1}));
+}
+function statusText(m,side){
+ if(!m)return 'Fixture not found';
+ if(!m.completed)return 'Scores not entered yet';
+ if(m.s1===m.s2)return 'DRAW';
+ return ((/moorabbin/i.test(m.n1)&&m.s1>m.s2)||(/moorabbin/i.test(m.n2)&&m.s2>m.s1))?'MOORABBIN WIN':'MOORABBIN LOSS';
+}
+function renderCard(cfg,match,detail,error,bestMargin){
+ const div=`DIV ${cfg.division} · SEC ${cfg.section}`;
+ if(error)return `<section class="side-card"><div class="card-head"><span class="side-title">${esc(cfg.side)}</span><span class="division">${div}</span></div><div class="note">API extraction FAILED: ${esc(error.message||'Unknown error')}. Retrying automatically.</div></section>`;
+ if(!match)return `<section class="side-card"><div class="card-head"><span class="side-title">${esc(cfg.side)}</span><span class="division">${div}</span></div><div class="note">API responded, but no Moorabbin fixture was extracted for the selected round. Matches found: ${cfg.matchCount??0}. Round detected: ${cfg.round??'none'}.</div></section>`;
+ const isM1=/moorabbin/i.test(match.n1);
+ const moName=isM1?match.n1:match.n2,oppName=isM1?match.n2:match.n1;
+ const overall=match.completed?(isM1?`${match.s1} – ${match.s2}`:`${match.s2} – ${match.s1}`):'VS';
+ const rinks=parseRinks(detail,match);
+ const scoreCount=rinks.filter(r=>r.s1!==null&&r.s2!==null).length;
+ const playerCount=rinks.reduce((n,r)=>n+r.players1.length+r.players2.length,0);
+ const moPlayers=rinks.reduce((n,r)=>n+((/moorabbin/i.test(match.n1)?r.players1:r.players2).length),0);
+ const extractionClass=scoreCount===4&&moPlayers===16?'ok':scoreCount>0?'warn':'fail';
+ const extractionText=`EXTRACTION: ${scoreCount}/4 rink scores · ${moPlayers}/16 Moorabbin players${detail?' · match detail loaded':' · match detail FAILED'}`;
+ const rows=[];
+ for(let i=0;i<4;i++){
+  const r=rinks[i];
+  if(!r){rows.push(`<div class="rink-row"><div class="rink-label">RINK ${i+1}</div><div class="player-list">Players unavailable</div><div class="rink-score pending">—</div></div>`);continue;}
+  const moScore=isM1?r.s1:r.s2,oppScore=isM1?r.s2:r.s1;
+  const moPlayers=isM1?r.players1:r.players2;
+  const margin=moScore-oppScore;
+  const cls=moScore>oppScore?'moor-win':moScore<oppScore?'opp-win':'draw';
+  const best=margin>0&&bestMargin!==null&&margin===bestMargin?' biggest-win':'';
+  const playerLines=[];
+  for(let j=0;j<moPlayers.length;j+=2){
+   const first=moPlayers[j],second=moPlayers[j+1];
+   playerLines.push(`<span>${esc(first.name||first)}${second?'&nbsp;&nbsp;'+esc(second.name||second):''}</span>`);
+  }
+  rows.push(`<div class="rink-row ${cls}${best}"><div class="rink-label">RINK ${esc(r.number)}</div><div class="player-list">${playerLines.length?playerLines.join(''):'Players not extracted'}</div><div class="rink-score">${moScore}–${oppScore}</div></div>`);
+ }
+ return `<section class="side-card">
+  <div class="card-head"><span class="side-title">${esc(cfg.side)}</span><span class="division">${div}</span></div>
+  <div class="matchup"><div class="teams">${esc(moName)} <span style="color:#657384">vs</span> ${esc(oppName)}</div><div class="overall">${overall}</div><div class="match-state">${esc(statusText(match,cfg.side))}</div><div class="extract-state ${extractionClass}">${esc(extractionText)}</div></div>
+  <div class="rinks">${rows.join('')}</div>
+ </section>`;
+}
+async function load(){
+ const cards=await Promise.all(SIDES.map(async cfg=>{
+  try{
+   const comp=await get('/competition/'+cfg.id+'/matches');
+   const rows=parseMatches(comp,cfg.section);
+   const round=currentRound(rows);
+   const roundRows=round===null?[]:rows.filter(m=>m.round===round);
+   const match=roundRows.find(m=>/moorabbin/i.test(m.n1)||/moorabbin/i.test(m.n2))||null;
+   let detail=null,detailError=null;
+   if(match){try{detail=await get('/match/'+match.id)}catch(e){detailError=e}}
+   return {cfg,match,detail,detailError,round,matchCount:roundRows.length,error:false};
+  }catch(e){console.error(cfg.side,e);return {cfg,error:e,round:null};}
+ }));
+ const roundNums=cards.map(x=>x.round).filter(x=>x!==null&&x!==undefined);
+ const roundCounts=new Map(); roundNums.forEach(r=>roundCounts.set(r,(roundCounts.get(r)||0)+1));
+ const common=roundCounts.size?[...roundCounts.entries()].sort((a,b)=>b[1]-a[1]||a[0]-b[0])[0][0]:null;
+ // Find the largest positive Moorabbin rink margin across all six sides; ties all qualify.
+ const margins=[];
+ for(const card of cards){
+  if(!card.match||!card.detail)continue;
+  const isM1=/moorabbin/i.test(card.match.n1);
+  for(const rink of parseRinks(card.detail,card.match)){
+   const mo=isM1?rink.s1:rink.s2,opp=isM1?rink.s2:rink.s1;
+   if(Number.isFinite(mo)&&Number.isFinite(opp)&&mo>opp)margins.push(mo-opp);
+  }
+ }
+ const bestMargin=margins.length?Math.max(...margins):null;
+ document.getElementById('roundLabel').textContent=common===null?'CURRENT SEASON · NO ROUND IDENTIFIED':`CURRENT SEASON · ROUND ${common} · LIVE RESULTS`;
+ document.getElementById('grid').innerHTML=cards.map(x=>renderCard(x.cfg,x.match,x.detail,x.error,bestMargin)).join('');
+ const failures=cards.filter(x=>x.error).length;
+ const detailsFailed=cards.filter(x=>x.match&&x.detailError).length;
+ const extracted=cards.filter(x=>x.match&&x.detail).map(x=>parseRinks(x.detail,x.match));
+ const rinkTotal=extracted.reduce((n,rs)=>n+rs.length,0);
+ const playerTotal=extracted.reduce((n,rs)=>n+rs.reduce((k,r)=>k+r.players1.length+r.players2.length,0),0);
+ document.getElementById('updated').textContent=`Updated ${new Date().toLocaleTimeString()} · API errors ${failures} · rinks ${rinkTotal} · players ${playerTotal}`;
+}
+load();
+setInterval(load,15000);
+</script>
+</body>
+</html>
